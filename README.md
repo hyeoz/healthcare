@@ -22,7 +22,8 @@
   - Axios
 
 ## Usage
-
+~~~
 $ git clone https://github.com/hyeoz/healthcare.git
 $ yarn
 $ yarn start
+~~~
