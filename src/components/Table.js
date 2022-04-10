@@ -1,17 +1,26 @@
 import axios from "axios";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Table, Container, Pagination, PaginationItem, PaginationLink } from "reactstrap";
 import Detail from "./Detail";
+import { getHost, getEthnicityList, getGenderList, getRaceList } from "../utils/Util";
 
 const TableBlock = () => {
-    const [row, setRow] = useState(20);
+    // Filter  
+    const [ethnicity, setEthnicity] = useState([]);
+    const [gender, setGender] = useState([]);
+    const [race, setRace] = useState([]);
+
+
+
+
+    const [row, setRow] = useState(30);
     const [data, setData] = useState({});
     const [pagination, setPagination] = useState([]);
-    const [toggleDetail, setToggleDetail] = useState(false);
 
+    const [toggleDetail, setToggleDetail] = useState(false);
     const getPatient = async () => {
         try {
-            const res = await axios.get("http://49.50.167.136:9871/api/patient/list");
+            const res = await axios.get(`${getHost()}/patient/list`);
             const resData = res.data.patient;
             // console.log(resData);
             setData({ list: resData.list, page: resData.page, rowPerPage: row });
@@ -20,13 +29,17 @@ const TableBlock = () => {
             console.log(error);
         }
     };
-    // console.log(data);
 
-    const onChangeSelect = (e) => {
-        const rowNum = e.target.value;
-        // console.log(rowNum);
-        setRow(parseInt(rowNum));
-    };
+    useEffect(() => {
+        getFilterData();
+    });
+    const getFilterData = async () => {
+        setEthnicity(await getEthnicityList());
+        setGender(await getGenderList());
+        setRace(await getRaceList());
+    }
+
+
     const onClickColumn = (e) => {
         console.log(e.target.innerText, "column click");
     };
@@ -38,9 +51,9 @@ const TableBlock = () => {
     return (
         <Container>
             <div className="mt-3 mb-3" style={{ display: "flex" }}>
-                <select onChange={onChangeSelect} style={{ marginLeft: "auto" }}>
-                    <option defaultValue={20} value={20}>
-                        --- select row ---
+                <select onChange={(e) => {setRow(parseInt(e.target.value));}} style={{ marginLeft: "auto" }}>
+                    <option defaultValue={row} value={row}>
+                        --- 행 갯수 ---
                     </option>
                     <option value={10}>10</option>
                     <option value={30}>30</option>
